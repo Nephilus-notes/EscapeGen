@@ -109,6 +109,11 @@ class Tile(Background):
             self.colkey = 7
             self.name = "Cave"
 
+        if self.u == 0 and self.v == 64:
+            self.colkey = 0
+            self.name = "Fog"
+            self.speed_modifier = 0
+
     def draw(self):
         px.blt(self.x, self.y, self.bank, self.u, self.v, self.w, self.h, colkey=7)
 

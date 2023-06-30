@@ -242,7 +242,7 @@ class GameScreen(GameState):
         elif self.game.size == 20:
             self.start = 0
         self.generate_map(self.game.size, self.start)
-        self.generate_fog(self.game.size, self.start)
+        self.generate_fog(self.game.size * 2, self.start)
         self.game.player = Player(player_sprite_u_v['front'][0], player_sprite_u_v["front"][1], Layer.fog, self.start) # 
         Layer.main.append(self.game.player)
         # self.game.player.move()
@@ -287,7 +287,7 @@ class GameScreen(GameState):
 
         for i in range(size):
             for j in range(size):
-                Layer.fog.append(Tile(fog_u_v[0], fog_u_v[1], 0, start + i*16, j*16))
+                Layer.fog.append(Tile(fog_u_v[0], fog_u_v[1], 0, start + i*8, j*8, 8, 8))
         # Layer.fore.append(px.text(200, 32, f'{self.fog}', 7))
 
     def check_player_location(self):
@@ -307,6 +307,14 @@ class GameScreen(GameState):
                     px.text(200, 32, f'{self.game.player.adjusted_speed}', 7)
                     px.text(200, 40, f'{tile.name}', 7)
                     px.text(200, 48, f'intersected', 7)
+
+        for tile in Interactable.sight:
+             if (tile.x >= self.game.player.x - 12 and 
+                tile.x <= self.game.player.x + 4 and 
+                tile.y <= self.game.player.y + 8 and 
+                tile.y >= self.game.player.y - 8):
+                 
+                 Layer.fog.remove(tile)
 
     def update(self):
         self.game.player.move()
