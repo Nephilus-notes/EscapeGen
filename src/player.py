@@ -7,6 +7,7 @@ class Player(Sprite):
         super().__init__(u, v, x, y, bank, w, h, colkey)
         self.direction = "Down"
         self.speed = 8
+        self.adjusted_speed = self.speed
 
         self.fog_layer = fog_layer
 

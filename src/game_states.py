@@ -303,7 +303,7 @@ class GameScreen(GameState):
                 if tile.name == "Cave":
                     self._next_state = WinScreen(self.game)
                 else:
-                    self.game.player.speed = tile.intersection()
+                    self.game.player.adjusted_speed = self.game.player.speed * tile.intersection()
                     px.text(200, 32, f'{self.game.player.speed}', 7)
                     px.text(200, 40, f'{tile.name}', 7)
                     px.text(200, 48, f'intersected', 7)
