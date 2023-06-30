@@ -324,7 +324,7 @@ class WinScreen(GameState):
     def draw(self):
         self.update_clicking_state()
         self.draw_layers()
-        # self.check_mouse_position()
+        self.check_mouse_position()
         px.text(140, 70, f'You Won!', 7)
 
 
