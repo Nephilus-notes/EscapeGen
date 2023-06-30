@@ -6,7 +6,7 @@ class Player(Sprite):
     def __init__(self, u, v, fog_layer = [], x=72, y=8, bank=0, w=8, h=8, colkey=7) -> None:
         super().__init__(u, v, x, y, bank, w, h, colkey)
         self.direction = "Down"
-        self.speed = 8
+        self.speed = 4
         self.adjusted_speed = self.speed
 
         self.fog_layer = fog_layer
@@ -19,28 +19,28 @@ class Player(Sprite):
             self.direction = "Up"
             self.u = 0
         elif px.btn(px.KEY_W) or px.btn(px.KEY_UP):
-            self.y -= self.speed
+            self.y -= self.adjusted_speed
 
         if (px.btn(px.KEY_S) and self.direction != "Down"
         or px.btn(px.KEY_DOWN) and self.direction != "Down"):
             self.direction = "Down"
             self.u = 8
         elif px.btn(px.KEY_S) or px.btn(px.KEY_DOWN):
-            self.y += self.speed
+            self.y += self.adjusted_speed
 
         if (px.btn(px.KEY_A) and self.direction != "Left"
         or px.btn(px.KEY_LEFT) and self.direction != "Left"):
             self.direction = "Left"
             self.u = 24
         elif px.btn(px.KEY_A) or px.btn(px.KEY_LEFT):
-            self.x -= self.speed
+            self.x -= self.adjusted_speed
 
         if (px.btn(px.KEY_D) and self.direction != "Right"
         or px.btn(px.KEY_RIGHT) and self.direction != "Right"):
             self.direction = "Right"
             self.u = 16
         elif px.btn(px.KEY_D) or px.btn(px.KEY_RIGHT):
-            self.x += self.speed
+            self.x += self.adjusted_speed
 
         self.check_sight()
 
