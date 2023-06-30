@@ -79,6 +79,28 @@ class Tile(Background):
     """Class for all tiles"""
     def __init__(self, u, v, bank, x, y, w=16, h=16):
         super().__init__(u, v, bank, x, y, w, h)
+        if self.u == 0 and self.v == 0:
+            self.colkey = 0
+            self.name = "Forest"
+        if self.u == 16 and self.v == 0:
+            self.colkey = 1
+            self.name = "Mountain"
+
+        if self.u == 32 and self.v == 0:
+            self.colkey = 0
+            self.name = "Grassland"
+
+        if self.u == 48 and self.v == 0:
+            self.colkey = 0
+            self.name = "Desert"
+
+        if self.u == 16 and self.v == 16:
+            self.colkey = 0
+            self.name = "Water"
+
+        if self.u == 0 and self.v == 16:
+            self.colkey = 7
+            self.name = "Cave"
 
     def draw(self):
         px.blt(self.x, self.y, self.bank, self.u, self.v, self.w, self.h, colkey=7)
