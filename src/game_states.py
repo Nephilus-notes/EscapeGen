@@ -317,7 +317,7 @@ class WinScreen(GameState):
         px.cls(0)
         self.bg = Background(**background['game_screen'])
         Layer.back.append(self.bg)
-        self.game.player = Player(player_sprite_u_v['front'][0], player_sprite_u_v["front"][1], Layer.fog, 0) # 
+        # self.game.player = Player(player_sprite_u_v['front'][0], player_sprite_u_v["front"][1], Layer.fog, 0) # 
         # Layer.main.append(self.game.player)
         # self.game.player.move()
 
@@ -326,6 +326,7 @@ class WinScreen(GameState):
         self.draw_layers()
         self.check_mouse_position()
         px.text(140, 70, f'You Won!', 7)
+        px.text(140, 80, f'Click to play again', 7)
 
 
     def check_mouse_position(self):
