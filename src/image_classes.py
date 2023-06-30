@@ -79,24 +79,31 @@ class Tile(Background):
     """Class for all tiles"""
     def __init__(self, u, v, bank, x, y, w=16, h=16):
         super().__init__(u, v, bank, x, y, w, h)
+
         if self.u == 0 and self.v == 0:
             self.colkey = 0
             self.name = "Forest"
+            self.speed_modifier = .8
+
         if self.u == 16 and self.v == 0:
             self.colkey = 1
             self.name = "Mountain"
+            self.speed_modifier = .2
 
         if self.u == 32 and self.v == 0:
             self.colkey = 0
             self.name = "Grassland"
+            self.speed_modifier = 1
 
         if self.u == 48 and self.v == 0:
             self.colkey = 0
             self.name = "Desert"
+            self.speed_modifier = 1.1
 
         if self.u == 16 and self.v == 16:
             self.colkey = 0
             self.name = "Water"
+            self.speed_modifier = .5
 
         if self.u == 0 and self.v == 16:
             self.colkey = 7
@@ -105,17 +112,18 @@ class Tile(Background):
     def draw(self):
         px.blt(self.x, self.y, self.bank, self.u, self.v, self.w, self.h, colkey=7)
 
-    def intersects(self, mouse_location:tuple):
+    def intersects(self, character_location:tuple):
         is_intersected = False
         if (
-            px.mouse_x > self.x and px.mouse_x < self.x + self.w
-            and px.mouse_y > self.y and px.mouse_y < self.y + self.h + 2
+            character_location[0] > self.x and character_location[1] < self.x + self.w
+            and character_location[1] > self.y and character_location[1] < self.y + self.h + 2
         ):
             is_intersected = True
             return is_intersected
 
-    def intersection(self):
-        pass
+    def intersection(self) -> float:
+        return self.speed_modifier
+        
     
 class Clickable:
     """"parent class for all objects that use hover or on click effects"""

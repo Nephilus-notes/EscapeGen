@@ -76,10 +76,10 @@ class GameState(ABC):
         for item in Layer.fore:
             item.draw()
     
-    def check_mouse_position(self):
-        for item in Interactable.main:
-            if item.intersects(self.MOUSE_LOCATION):
-                item.intersection()
+    # def check_mouse_position(self):
+    #     for item in Interactable.main:
+    #         if item.intersects(self.MOUSE_LOCATION):
+    #             item.intersection()
 
     def draw_hud(self):
         # Score on top right
@@ -139,7 +139,7 @@ class GameState(ABC):
         self.update_clicking_state()
         # px.cls(0)
         self.draw_layers()
-        self.check_mouse_position()
+        # self.check_mouse_position()
         self.game.player.draw_sidebar()
         self.draw_name()
         self.draw_explorer()
@@ -225,7 +225,7 @@ class IntroScreen(GameState):
     def draw(self):
         self.update_clicking_state()
         # self.draw_layers()
-        self.check_mouse_position()
+        # self.check_mouse_position()
         # self.game.player.draw_sidebar()
 
 
@@ -255,7 +255,8 @@ class GameScreen(GameState):
     def draw(self):
         self.update_clicking_state()
         self.draw_layers()
-        self.check_mouse_position()
+        # self.check_mouse_position()
+        self.check_player_location()
         px.text(4, 12, f'{px.mouse_x}x/{px.mouse_y}y', 7)
         px.text(200, 16, f'{self.game.size}', 7)
         px.text(200, 24, f'{self.start}', 7)
@@ -276,6 +277,9 @@ class GameScreen(GameState):
         for i in range(size):
             for j in range(size):
                 Layer.back.append(Tile(tile_list_u_v[self.map[i][j]][0], tile_list_u_v[self.map[i][j]][1], 0, start + i*16, j*16))
+        
+        for tile in Layer.back:
+            Interactable.main.append(tile)
 
 
     def generate_fog(self, size=20, start=0):
@@ -286,6 +290,44 @@ class GameScreen(GameState):
                 Layer.fog.append(Tile(fog_u_v[0], fog_u_v[1], 0, start + i*16, j*16))
         # Layer.fore.append(px.text(200, 32, f'{self.fog}', 7))
 
+    def check_player_location(self):
+        for tile in Interactable.main:
+            if (tile.x >= self.game.player.x - 12 and 
+                tile.x <= self.game.player.x + 4 and 
+                tile.y <= self.game.player.y + 8 and 
+                tile.y >= self.game.player.y - 8):
+
+                """ 32 >= 24+7 (py +7)
+                32 <= 38+7
+                32 > = """
+                if tile.name == "Cave":
+                    self._next_state = WinScreen(self.game)
+                else:
+                    self.game.player.speed = tile.intersection()
+                    px.text(200, 32, f'{self.game.player.speed}', 7)
+                    px.text(200, 40, f'{tile.name}', 7)
+                    px.text(200, 48, f'intersected', 7)
 
     def update(self):
         self.game.player.move()
+
+class WinScreen(GameState):
+    def on_enter(self):
+        self.clear_layers()
+        px.cls(0)
+        self.bg = Background(**background['game_screen'])
+        Layer.back.append(self.bg)
+        self.game.player = Player(player_sprite_u_v['front'][0], player_sprite_u_v["front"][1], Layer.fog, 0) # 
+        # Layer.main.append(self.game.player)
+        # self.game.player.move()
+
+    def draw(self):
+        self.update_clicking_state()
+        self.draw_layers()
+        # self.check_mouse_position()
+        px.text(140, 70, f'You Won!', 7)
+        px.text(200, 24, f'{self.start}', 7)
+
+    def check_mouse_position(self):
+        if px.btnr(px.MOUSE_BUTTON_LEFT):
+            self._next_state = TitleScreen(self.game)
