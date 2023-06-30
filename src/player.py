@@ -8,6 +8,8 @@ class Player(Sprite):
         self.direction = "Down"
         self.speed = 4
         self.adjusted_speed = self.speed
+        self.base_sight = 20
+        self.sight = self.base_sight
 
         self.fog_layer = fog_layer
 
@@ -53,21 +55,21 @@ class Player(Sprite):
             # if tiles in the fog layer exist in the player's x and y values or the player's y value - 16 remove the tile from the fog layer
 
             for tile in self.fog_layer:
-                if tile.y >= self.y - 16 and tile.y <= self.y and tile.x >= self.x - 8 and tile.x <= self.x:
+                if tile.y >= self.y - self.sight and tile.y <= self.y and tile.x >= self.x - 3 and tile.x <= self.x + 11:
                     self.fog_layer.remove(tile)
 
         elif self.direction == "Down":
             for tile in self.fog_layer:
-                if tile.y <= self.y + 8 and tile.y >= self.y and tile.x >= self.x - 8 and tile.x <= self.x:
+                if tile.y <= self.y + self.sight and tile.y >= self.y and tile.x >= self.x - 3 and tile.x <= self.x  + 11:
                     self.fog_layer.remove(tile)
 
 
         elif self.direction == "Left":
             for tile in self.fog_layer:
-                if tile.x <= self.x and tile.x >= self.x - 16 and tile.y >= self.y -8 and tile.y <= self.y:
+                if tile.x <= self.x and tile.x >= self.x - self.sight and tile.y >= self.y - 3 and tile.y <= self.y + 11:
                     self.fog_layer.remove(tile)
 
         elif self.direction == "Right":
             for tile in self.fog_layer:
-                if tile.x <= self.x + 8 and tile.x >= self.x and tile.y >= self.y -8 and tile.y <= self.y:
+                if tile.x <= self.x + self.sight and tile.x >= self.x and tile.y >= self.y - 3 and tile.y <= self.y + 11:
                     self.fog_layer.remove(tile)
