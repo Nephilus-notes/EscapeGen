@@ -326,7 +326,7 @@ class WinScreen(GameState):
         self.draw_layers()
         # self.check_mouse_position()
         px.text(140, 70, f'You Won!', 7)
-        px.text(200, 24, f'{self.start}', 7)
+
 
     def check_mouse_position(self):
         if px.btnr(px.MOUSE_BUTTON_LEFT):
