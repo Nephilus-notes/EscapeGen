@@ -7,6 +7,7 @@ import pyxel as px
 from src.constants import *
 from src.utils import *
 from src.image_classes import *
+from src.player import Player
 
 class GameState(ABC):
     def __init__(self, game):
@@ -21,6 +22,7 @@ class GameState(ABC):
         self._is_clicking = False
         self._register_click = False
         self.on_enter()
+        self.size = 15
 
 
     @abstractmethod
@@ -144,18 +146,18 @@ class GameState(ABC):
     def set_previous_state(self):
         self.game._previous_state = self
 
-    def draw_explorer(self):
-        if self.game.player.exploring == True:
-            if self.name == "The Underbelly" or self.name == "The Shining Forest":
-                if self.game.explored > 0 and self.game.explored < 3:
-                    x, y = player_sprite_locations[self.name][0]
-                elif self.game.explored >= 3 and self.game.explored < 6:
-                    x, y = player_sprite_locations[self.name][1]
-                elif self.game.explored >= 6 and self.game.explored < 9:
-                    x, y = player_sprite_locations[self.name][2]
-                elif self.game.explored >= 9:
-                    x, y = player_sprite_locations[self.name][3]
-                px.blt(x, y, 2, 8, self.game.player.v, 8, 8, 7)
+    # def draw_explorer(self):
+    #     if self.game.player.exploring == True:
+    #         if self.name == "The Underbelly" or self.name == "The Shining Forest":
+    #             if self.game.explored > 0 and self.game.explored < 3:
+    #                 x, y = player_sprite_locations[self.name][0]
+    #             elif self.game.explored >= 3 and self.game.explored < 6:
+    #                 x, y = player_sprite_locations[self.name][1]
+    #             elif self.game.explored >= 6 and self.game.explored < 9:
+    #                 x, y = player_sprite_locations[self.name][2]
+    #             elif self.game.explored >= 9:
+    #                 x, y = player_sprite_locations[self.name][3]
+    #             px.blt(x, y, 2, 8, self.game.player.v, 8, 8, 7)
 
     def display_text(self):
         if len(self.game.text) > 0:
@@ -193,6 +195,10 @@ class TitleScreen(GameState):
         self.bg.draw()
         self.check_mouse_position()
         px.text(4, 12, f'{px.mouse_x}x/{px.mouse_y}y', 7)
+        px.text(16, 32, "Small World - 10", 7)
+        px.text(16, 48, "Medium World - 15", 7)
+        px.text(16, 64, "Large World - 20", 7)
+
         # self.game.player.draw_sidebar()
 
 class IntroScreen(GameState):
@@ -215,8 +221,13 @@ class GameScreen(GameState):
     def on_enter(self):
         self.clear_layers()
         px.cls(0)
-        self.bg = Background(**background['game_screen'])
-        Layer.back.append(self.bg)
+        # self.bg = Background(**background['game_screen'])
+        # Layer.back.append(self.bg)
+        self.generate_map(self.size)
+        self.game.player = Player(player_sprite_u_v['front'][0], player_sprite_u_v["front"][1]) # 
+        Layer.main.append(self.game.player)
+        # self.game.player.move()
+
 
     # def check_mouse_position(self):
     #     if px.btnr(px.MOUSE_BUTTON_LEFT):
@@ -226,4 +237,29 @@ class GameScreen(GameState):
         self.update_clicking_state()
         self.draw_layers()
         self.check_mouse_position()
-        # self.game.player.draw_sidebar()
+
+    def generate_map(self, size=20):
+        self.map = [[0]* size for i in range(size)]
+        # generate size - 1 number of numbers between 0 and 4.
+
+        for i in range(size):
+            for j in range(size):
+                self.map[i][j] = RI(0, 4)
+
+        # insert 5 into the map at a random location
+        self.map[RI(0, size-1)][RI(0, size-1)] = 5
+
+        # for each element of the map create a tile whose u and v values are determined by the number in the map, whose x values increase by 16 for each element in the row, and whose y values increase by 16 for each element in the column and replace the number in the map with the tile object.
+        # for i in range(size):
+        #     for j in range(size):
+        #         self.map[i][j] = Tile(tile_list_u_v[self.map[i][j]][0], tile_list_u_v[self.map[i][j]][1], 0, i*16, j*16)
+
+        for i in range(size):
+            for j in range(size):
+                Layer.back.append(Tile(tile_list_u_v[self.map[i][j]][0], tile_list_u_v[self.map[i][j]][1], 0, i*16, j*16))
+
+        # Layer.back.append(self.map)
+
+
+    def update(self):
+        self.game.player.move()

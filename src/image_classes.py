@@ -74,6 +74,15 @@ class Background(DisplayImage):
     def draw(self):
         px.bltm(self.x, self.y, tm=self.bank, u=self.u, v=self.v, w=self.w, h=self.h)
 
+
+class Tile(Background):
+    """Class for all tiles"""
+    def __init__(self, u, v, bank, x, y, w=16, h=16):
+        super().__init__(u, v, bank, x, y, w, h)
+
+    def draw(self):
+        px.blt(self.x, self.y, self.bank, self.u, self.v, self.w, self.h, colkey=0)
+    
 class Clickable:
     """"parent class for all objects that use hover or on click effects"""
     def intersects(self, mouse_location:tuple):
