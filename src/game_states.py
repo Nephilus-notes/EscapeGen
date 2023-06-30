@@ -22,7 +22,6 @@ class GameState(ABC):
         self._is_clicking = False
         self._register_click = False
         self.on_enter()
-        self.size = 15
 
 
     @abstractmethod
@@ -52,6 +51,7 @@ class GameState(ABC):
 
     def clear_layers(self):
         Layer.back = []
+        Layer.fog = []
         Layer.main = []
         Layer.fore = []
         Interactable.main = []
@@ -68,6 +68,8 @@ class GameState(ABC):
 
         # px.cls(Background.color)
         for item in Layer.back:
+            item.draw()
+        for item in Layer.fog:
             item.draw()
         for item in reversed(Layer.main):
             item.draw()
@@ -186,7 +188,15 @@ class TitleScreen(GameState):
 
     def check_mouse_position(self):
         if px.btnr(px.MOUSE_BUTTON_LEFT):
-            self._next_state = GameScreen(self.game)
+            if px.mouse_x > 16 and px.mouse_x < 80 and px.mouse_y > 32 and px.mouse_y < 40:
+                self.game.size = 10
+            if px.mouse_x > 16 and px.mouse_x < 85 and px.mouse_y > 48 and px.mouse_y < 56:
+                self.game.size = 15
+            if px.mouse_x > 16 and px.mouse_x < 80 and px.mouse_y > 64 and px.mouse_y < 72:
+                self.game.size = 20
+
+            if px.mouse_x > WIDTH //2 - 20 and px.mouse_x < WIDTH //2 + 20 and px.mouse_y > HEIGHT// 2 and px.mouse_y < HEIGHT// 2 + 8:
+                self._next_state = GameScreen(self.game)
 
 
     def draw(self):
@@ -198,6 +208,8 @@ class TitleScreen(GameState):
         px.text(16, 32, "Small World - 10", 7)
         px.text(16, 48, "Medium World - 15", 7)
         px.text(16, 64, "Large World - 20", 7)
+        px.text(200, 16, f'{self.game.size}', 7)
+        px.text(WIDTH //2 - 20, HEIGHT// 2, "Start Game", 8)
 
         # self.game.player.draw_sidebar()
 
@@ -223,8 +235,15 @@ class GameScreen(GameState):
         px.cls(0)
         # self.bg = Background(**background['game_screen'])
         # Layer.back.append(self.bg)
-        self.generate_map(self.size)
-        self.game.player = Player(player_sprite_u_v['front'][0], player_sprite_u_v["front"][1]) # 
+        if self.game.size == 10:
+            self.start = 56
+        elif self.game.size == 15:
+            self.start = 16
+        elif self.game.size == 20:
+            self.start = 0
+        self.generate_map(self.game.size, self.start)
+        self.generate_fog(self.game.size, self.start)
+        self.game.player = Player(player_sprite_u_v['front'][0], player_sprite_u_v["front"][1], Layer.fog, self.start) # 
         Layer.main.append(self.game.player)
         # self.game.player.move()
 
@@ -237,8 +256,12 @@ class GameScreen(GameState):
         self.update_clicking_state()
         self.draw_layers()
         self.check_mouse_position()
+        px.text(4, 12, f'{px.mouse_x}x/{px.mouse_y}y', 7)
+        px.text(200, 16, f'{self.game.size}', 7)
+        px.text(200, 24, f'{self.start}', 7)
 
-    def generate_map(self, size=20):
+
+    def generate_map(self, size=20, start=0):
         self.map = [[0]* size for i in range(size)]
         # generate size - 1 number of numbers between 0 and 4.
 
@@ -249,16 +272,19 @@ class GameScreen(GameState):
         # insert 5 into the map at a random location
         self.map[RI(0, size-1)][RI(0, size-1)] = 5
 
-        # for each element of the map create a tile whose u and v values are determined by the number in the map, whose x values increase by 16 for each element in the row, and whose y values increase by 16 for each element in the column and replace the number in the map with the tile object.
-        # for i in range(size):
-        #     for j in range(size):
-        #         self.map[i][j] = Tile(tile_list_u_v[self.map[i][j]][0], tile_list_u_v[self.map[i][j]][1], 0, i*16, j*16)
+        # for each element of the map create a tile whose u and v values are determined by the number in the map, whose x value starts at self.start and increases by 16 for each element in the row, and whose y values increase by 16 for each element in the column and append the Tile object to Layer.back.
+        for i in range(size):
+            for j in range(size):
+                Layer.back.append(Tile(tile_list_u_v[self.map[i][j]][0], tile_list_u_v[self.map[i][j]][1], 0, start + i*16, j*16))
+
+
+    def generate_fog(self, size=20, start=0):
+        self.fog = [[0]* size for i in range(size)]
 
         for i in range(size):
             for j in range(size):
-                Layer.back.append(Tile(tile_list_u_v[self.map[i][j]][0], tile_list_u_v[self.map[i][j]][1], 0, i*16, j*16))
-
-        # Layer.back.append(self.map)
+                Layer.fog.append(Tile(fog_u_v[0], fog_u_v[1], 0, start + i*16, j*16))
+        # Layer.fore.append(px.text(200, 32, f'{self.fog}', 7))
 
 
     def update(self):

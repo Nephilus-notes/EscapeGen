@@ -81,7 +81,19 @@ class Tile(Background):
         super().__init__(u, v, bank, x, y, w, h)
 
     def draw(self):
-        px.blt(self.x, self.y, self.bank, self.u, self.v, self.w, self.h, colkey=0)
+        px.blt(self.x, self.y, self.bank, self.u, self.v, self.w, self.h, colkey=7)
+
+    def intersects(self, mouse_location:tuple):
+        is_intersected = False
+        if (
+            px.mouse_x > self.x and px.mouse_x < self.x + self.w
+            and px.mouse_y > self.y and px.mouse_y < self.y + self.h + 2
+        ):
+            is_intersected = True
+            return is_intersected
+
+    def intersection(self):
+        pass
     
 class Clickable:
     """"parent class for all objects that use hover or on click effects"""
