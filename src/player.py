@@ -83,21 +83,21 @@ class Player(Sprite):
             # if tiles in the fog layer exist in the player's x and y values or the player's y value - 16 remove the tile from the fog layer
 
             for tile in self.fog_layer:
-                if tile.y >= self.y - self.sight and tile.y <= self.y and tile.x >= self.x - 3 and tile.x <= self.x + 11:
+                if tile.y >= self.y - self.sight and tile.y <= self.y and tile.x >= self.x - 3 and tile.x <= self.x + 12:
                     self.fog_layer.remove(tile)
 
         elif self.direction == "Down":
             for tile in self.fog_layer:
-                if tile.y <= self.y + self.sight + 8 and tile.y >= self.y and tile.x >= self.x - 3 and tile.x <= self.x  + 11:
+                if tile.y <= self.y + self.sight + 8 and tile.y >= self.y and tile.x >= self.x - 3 and tile.x <= self.x  + 12:
                     self.fog_layer.remove(tile)
 
 
         elif self.direction == "Left":
             for tile in self.fog_layer:
-                if tile.x <= self.x and tile.x >= self.x - self.sight and tile.y >= self.y - 3 and tile.y <= self.y + 11:
+                if tile.x <= self.x and tile.x >= self.x - self.sight and tile.y >= self.y - 3 and tile.y <= self.y + 12:
                     self.fog_layer.remove(tile)
 
         elif self.direction == "Right":
             for tile in self.fog_layer:
-                if tile.x <= self.x + self.sight + 8 and tile.x >= self.x and tile.y >= self.y - 3 and tile.y <= self.y + 11:
+                if tile.x <= self.x + self.sight + 8 and tile.x >= self.x and tile.y >= self.y - 3 and tile.y <= self.y + 12:
                     self.fog_layer.remove(tile)
