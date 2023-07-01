@@ -327,9 +327,9 @@ class GameScreen(GameState):
         self.draw_layers()
         self.check_player_location()
         # self.check_sight()
-        px.text(4, 12, f'{px.mouse_x}x/{px.mouse_y}y', 7)
-        px.text(200, 16, f'{self.encroaching_dooms_count}', 7)
-        px.text(200, 24, f'{self.player_action_count}', 7)
+        # px.text(4, 12, f'{px.mouse_x}x/{px.mouse_y}y', 7)
+        # px.text(200, 16, f'{self.encroaching_dooms_count}', 7)
+        # px.text(200, 24, f'{self.player_action_count}', 7)
 
 
     def generate_map(self, size=20, start=0):
@@ -379,8 +379,8 @@ class GameScreen(GameState):
                     self._next_state = LoseScreen(self.game)
                 else:
                     self.game.player.adjusted_speed = self.game.player.speed * tile.intersection()
-                    px.text(200, 32, f'intersect', 7)
-                    px.text(200, 40, f'{tile.name}', 7)
+                    # px.text(200, 32, f'intersect', 7)
+                    # px.text(200, 40, f'{tile.name}', 7)
                     
 
     def death_comes(self):
