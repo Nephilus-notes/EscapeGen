@@ -20,12 +20,10 @@ jobs:
       - run: pyxel app2html EscapeGen.pyxapp
       - run: git config --global user.name "Nephilus-notes"
       - run: git config --global user.email "cmhmcc@gmail.com"
-      
-      - run: git checkout -b prod
-      
+
       - run: git add EscapeGen.html       
       - run: git mv -f EscapeGen.html index.html
 
       - run: git commit -m "updating html"
-      - run: git push -u origin prod
+      - run: git push -u origin main
     
