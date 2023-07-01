@@ -333,10 +333,11 @@ class Button(Clickable, DisplayImage):
         super().__init__(x, y, bank, u, v, w, h, colkey)
         self.owner = owner
         self.use= use
+        self.color = 13
 
     def draw(self):
         px.blt(self.x, self.y, self.bank, self.u, self.v, self.w, self.h, colkey= self.colkey)
-        px.text(self.x + 8, self.y +2, F'{self.use}', 7)
+        px.text(self.x + 8, self.y +2, F'{self.use}', self.color)
 
 class StartGameButton(Button):
     def __init__(self, owner=None, x=120, y=88, bank=0, u=40, v=144, w=64, h=16, colkey=10, use: str = "Start Game") -> None:

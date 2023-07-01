@@ -15,6 +15,8 @@ class Game:
         self.text_timer = 0
         self.text = []
         self.size = 15
+        self.fog = True
+        self.doom_speed = 16
 
 # How to set levels for all sound? Not sure. still not sure
         px.Sound()

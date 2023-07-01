@@ -185,31 +185,98 @@ class TitleScreen(GameState):
         self.clear_layers()
         self.bg = Background(**background['title'])
         Layer.back.append(self.bg)
+        self.small_world = Button(self, 16, 80, 1, 56, 8, use="Small World - 10")
+        self.medium_world = Button(self, 16, 96, 1, 64, 8, use ="Medium World - 15")
+        self.large_world = Button(self, 16, 112, 1, 64, 8, use = "Large World - 20")
+        self.start_game = Button(self, WIDTH //2 - 20, HEIGHT// 2, 1, 40, 8, use = "Start Game")
+        self.fog_of_war_toggle = Button(self,WIDTH //2 - 20, 112, 1, 64, 8, use = "Fog of War")
+        self.fast_doom = Button(self, WIDTH * .7, 80, 1, 64, 8, use = "Hard/Fast Doom")
+        self.medium_doom = Button(self, WIDTH * .7, 96, 1, 64, 8, use = "Normal Doom")
+        self.slow_doom = Button(self, WIDTH * .7, 112, 1, 64, 8, use = "Easy/Slow Doom")
+        self.medium_world.color = 10
+        self.fog_of_war_toggle.color = 10
+        self.medium_doom.color = 10
+        Layer.main.append(self.small_world)
+        Layer.main.append(self.medium_world)
+        Layer.main.append(self.large_world)
+        Layer.main.append(self.start_game)
+        Layer.main.append(self.fog_of_war_toggle)
+        Layer.main.append(self.fast_doom)
+        Layer.main.append(self.medium_doom)
+        Layer.main.append(self.slow_doom)
+
+        for item in Layer.main:
+            Interactable.main.append(item)
+
+
+
 
     def check_mouse_position(self):
         if px.btnr(px.MOUSE_BUTTON_LEFT):
-            if px.mouse_x > 16 and px.mouse_x < 80 and px.mouse_y > 32 and px.mouse_y < 40:
-                self.game.size = 10
-            if px.mouse_x > 16 and px.mouse_x < 85 and px.mouse_y > 48 and px.mouse_y < 56:
-                self.game.size = 15
-            if px.mouse_x > 16 and px.mouse_x < 80 and px.mouse_y > 64 and px.mouse_y < 72:
-                self.game.size = 20
+            for button in Interactable.main:
+                if button.intersects(self.MOUSE_LOCATION):
+                    if button.use == "Small World - 10":
+                        self.game.size = 10
+                        self.small_world.color = 10
+                        self.medium_world.color = 13
+                        self.large_world.color = 13
 
-            if px.mouse_x > WIDTH //2 - 20 and px.mouse_x < WIDTH //2 + 20 and px.mouse_y > HEIGHT// 2 and px.mouse_y < HEIGHT// 2 + 8:
-                self._next_state = GameScreen(self.game)
+                    elif button.use == "Medium World - 15":
+                        self.game.size = 15
+                        self.small_world.color = 13
+                        self.medium_world.color = 10
+                        self.large_world.color = 13
+
+                    elif button.use == "Large World - 20":
+                        self.game.size = 20
+                        self.small_world.color = 13
+                        self.medium_world.color = 13
+                        self.large_world.color = 10
+
+                    elif button.use == "Start Game":
+                        self._next_state = GameScreen(self.game)
+                    elif button.use == "Fog of War":
+                        if self.game.fog == True:
+                            self.game.fog = False
+                            self.fog_of_war_toggle.color = 13
+                        else:
+                            self.game.fog = True
+                            self.fog_of_war_toggle.color = 10
+                        
+                    elif button.use == "Hard/Fast Doom":
+                        self.game.doom_speed = 8
+                        self.fast_doom.color = 10
+                        self.medium_doom.color = 13
+                        self.slow_doom.color = 13
+
+                    elif button.use == "Normal Doom":
+                        self.game.doom_speed = 16
+                        self.fast_doom.color = 13
+                        self.medium_doom.color = 10
+                        self.slow_doom.color = 13
+
+                    elif button.use == "Easy/Slow Doom":
+                        self.game.doom_speed = 32
+                        self.fast_doom.color = 13
+                        self.medium_doom.color = 13
+                        self.slow_doom.color = 10
+
+
 
 
     def draw(self):
         self.update_clicking_state()
         # self.draw_layers()
-        self.bg.draw()
+        # self.bg.draw()
+        self.draw_layers()
         self.check_mouse_position()
-        px.text(4, 12, f'{px.mouse_x}x/{px.mouse_y}y', 7)
-        px.text(16, 32, "Small World - 10", 7)
-        px.text(16, 48, "Medium World - 15", 7)
-        px.text(16, 64, "Large World - 20", 7)
-        px.text(200, 16, f'{self.game.size}', 7)
-        px.text(WIDTH //2 - 20, HEIGHT// 2, "Start Game", 8)
+        # px.text(4, 12, f'{px.mouse_x}x/{px.mouse_y}y', 7)
+
+        # px.text(16, 32, "Small World - 10", 7)
+        # px.text(16, 48, "Medium World - 15", 7)
+        # px.text(16, 64, "Large World - 20", 7)
+        # px.text(200, 16, f'{self.game.size}', 7)
+        # px.text(WIDTH //2 - 20, HEIGHT// 2, "Start Game", 8)
 
         # self.game.player.draw_sidebar()
 
@@ -239,7 +306,7 @@ class GameScreen(GameState):
             self.start = 56
         elif self.game.size == 15:
             self.start = 16
-        elif self.game.size == 20:
+        elif self.game.size >= 20:
             self.start = 0
         self.generate_map(self.game.size, self.start)
         # self.generate_fog(self.game.size * 4, self.start)
@@ -305,17 +372,20 @@ class GameScreen(GameState):
                 32 > = """
                 if tile.name == "Cave":
                     self._next_state = WinScreen(self.game)
+                elif tile.name == "Encroaching Doom":
+                    self._next_state = LoseScreen(self.game)
                 else:
                     self.game.player.adjusted_speed = self.game.player.speed * tile.intersection()
                     px.text(200, 32, f'intersect', 7)
-                    px.text(200, 40, f'{tile.column}', 7)
+                    px.text(200, 40, f'{tile.name}', 7)
                     
 
     def death_comes(self):
-        if self.player_action_count >= 10:
+        if self.player_action_count >= self.game.doom_speed:
             self.encroaching_dooms_count += 1
             self.player_action_count = 0
             for i in range(9,-1, -1):
+                Layer.back[i].name = "Encroaching Doom"
                 Layer.back.remove(Layer.back[i])
             
     def update(self):
@@ -338,6 +408,26 @@ class WinScreen(GameState):
         self.draw_layers()
         self.check_mouse_position()
         px.text(140, 70, f'You Won!', 7)
+        px.text(140, 80, f'Click to play again', 7)
+
+
+    def check_mouse_position(self):
+        if px.btnr(px.MOUSE_BUTTON_LEFT):
+            self._next_state = TitleScreen(self.game)
+
+class LoseScreen(GameState):
+    def on_enter(self):
+        self.clear_layers()
+        px.cls(0)
+        self.bg = Background(**background['game_screen'])
+        Layer.back.append(self.bg)
+
+
+    def draw(self):
+        self.update_clicking_state()
+        self.draw_layers()
+        self.check_mouse_position()
+        px.text(140, 70, f'The Doom caught you. You Lost!', 7)
         px.text(140, 80, f'Click to play again', 7)
 
 
