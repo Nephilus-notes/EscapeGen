@@ -19,6 +19,7 @@ class Player(Sprite):
         """Moves the player based on input, needs an additional condition
         to deal with nearing the edge of the screen."""
         current_x = self.x
+        current_y = self.y
         if (px.btn(px.KEY_W) and self.direction != "Up"
         or px.btn(px.KEY_UP) and self.direction != "Up"):
             self.direction = "Up"
@@ -68,7 +69,7 @@ class Player(Sprite):
                 self.x += self.adjusted_speed
         
         self.check_sight()
-        if self.x == current_x:
+        if self.x == current_x and self.y == current_y:
             return 0
         else:
             return 1

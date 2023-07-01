@@ -242,7 +242,7 @@ class GameScreen(GameState):
         elif self.game.size == 20:
             self.start = 0
         self.generate_map(self.game.size, self.start)
-        self.generate_fog(self.game.size * 4, self.start)
+        # self.generate_fog(self.game.size * 4, self.start)
         self.game.player = Player(player_sprite_u_v['front'][0], player_sprite_u_v["front"][1], Layer.fog, self.start) # 
         Layer.main.append(self.game.player)
 
@@ -307,45 +307,17 @@ class GameScreen(GameState):
                     self._next_state = WinScreen(self.game)
                 else:
                     self.game.player.adjusted_speed = self.game.player.speed * tile.intersection()
+                    px.text(200, 32, f'intersect', 7)
+                    px.text(200, 40, f'{tile.column}', 7)
                     
 
     def death_comes(self):
-        if self.player_action_count >= 5:
+        if self.player_action_count >= 10:
             self.encroaching_dooms_count += 1
             self.player_action_count = 0
-            for tile in Layer.back:
-                if tile.column == self.encroaching_dooms_count:
-                    Layer.back.remove(tile)
-
-
-    # def check_sight(self):
-    #     sight_lines = []
-
-    #     for tile in Layer.fog:
-    #         if self.game.player.direction == "Up":
-    #             sight_lines = [[int (self.game.player.x - 2), int(self.game.player.x + 12)], 
-    #                            [int(self.game.player.y - self.game.player.base_sight, int(self.game.player.y + 9))]]
-                
-    #         elif self.game.player.direction == "Down":
-    #             sight_lines = [[int(self.game.player.x -2), int(self.game.player.x + 12)],
-    #                              [int(self.game.player.y - 1), int(self.game.player.y + self.game.player.base_sight + 8)]]
-                
-    #         elif self.game.player.direction == "Left":
-    #             sight_lines = [[int(self.game.player.x - self.game.player.base_sight), int(self.game.player.x + 8)],
-    #                                 [int(self.game.player.y - 2), int(self.game.player.y + 10)]]
-                
-    #         elif self.game.player.direction == "Right":
-    #             sight_lines = [[int(self.game.player.x - 1), int(self.game.player.x + self.game.player.base_sight + 8)],
-    #                                 [int(self.game.player.y - 2), int(self.game.player.y + 10)]]
-
-    #         if tile.sight_intersect(sight_lines):
-    #             self.game.player.sight = self.game.player.base_sight * tile.sight_intersection()
-    #             px.text(200, 32, f'{self.game.player.sight}', 7)
-    #             px.text(200, 40, f'{tile.name}', 7)
-    #             px.text(200, 48, f'intersected', 7)
-
-    #     px.text(200, 56, f'{sight_lines}', 7)
-
+            for i in range(9,-1, -1):
+                Layer.back.remove(Layer.back[i])
+            
     def update(self):
         if self.game.player.move() == 1:
             self.player_action_count += 1
@@ -357,8 +329,8 @@ class WinScreen(GameState):
         px.cls(0)
         self.bg = Background(**background['game_screen'])
         Layer.back.append(self.bg)
-        # self.game.player = Player(player_sprite_u_v['front'][0], player_sprite_u_v["front"][1], Layer.fog, 0) # 
-        # Layer.main.append(self.game.player)
+        self.game.player = Player(player_sprite_u_v['front'][0], player_sprite_u_v["front"][1], Layer.fog, 120, 80) # 
+        Layer.main.append(self.game.player)
         # self.game.player.move()
 
     def draw(self):
