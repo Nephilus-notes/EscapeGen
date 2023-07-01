@@ -245,6 +245,9 @@ class GameScreen(GameState):
         self.generate_fog(self.game.size * 4, self.start)
         self.game.player = Player(player_sprite_u_v['front'][0], player_sprite_u_v["front"][1], Layer.fog, self.start) # 
         Layer.main.append(self.game.player)
+
+        self.player_action_count = 0
+        self.encroaching_dooms_count = 0
         # self.game.player.move()
 
 
@@ -258,8 +261,8 @@ class GameScreen(GameState):
         self.check_player_location()
         # self.check_sight()
         px.text(4, 12, f'{px.mouse_x}x/{px.mouse_y}y', 7)
-        px.text(200, 16, f'{self.game.size}', 7)
-        px.text(200, 24, f'{self.start}', 7)
+        px.text(200, 16, f'{self.encroaching_dooms_count}', 7)
+        px.text(200, 24, f'{self.player_action_count}', 7)
 
 
     def generate_map(self, size=20, start=0):
@@ -276,7 +279,7 @@ class GameScreen(GameState):
         # for each element of the map create a tile whose u and v values are determined by the number in the map, whose x value starts at self.start and increases by 16 for each element in the row, and whose y values increase by 16 for each element in the column and append the Tile object to Layer.back.
         for i in range(size):
             for j in range(10):
-                Layer.back.append(Tile(tile_list_u_v[self.map[i][j]][0], tile_list_u_v[self.map[i][j]][1], 0, start + i*16, j*16))
+                Layer.back.append(Tile(tile_list_u_v[self.map[i][j]][0], tile_list_u_v[self.map[i][j]][1], 0, start + i*16, j*16, column=i))
         
         for tile in Layer.back:
             Interactable.main.append(tile)
@@ -305,6 +308,15 @@ class GameScreen(GameState):
                 else:
                     self.game.player.adjusted_speed = self.game.player.speed * tile.intersection()
                     
+
+    def death_comes(self):
+        if self.player_action_count >= 5:
+            self.encroaching_dooms_count += 1
+            self.player_action_count = 0
+            for tile in Layer.back:
+                if tile.column == self.encroaching_dooms_count:
+                    Layer.back.remove(tile)
+
 
     # def check_sight(self):
     #     sight_lines = []
@@ -335,7 +347,9 @@ class GameScreen(GameState):
     #     px.text(200, 56, f'{sight_lines}', 7)
 
     def update(self):
-        self.game.player.move()
+        if self.game.player.move() == 1:
+            self.player_action_count += 1
+        self.death_comes()
 
 class WinScreen(GameState):
     def on_enter(self):

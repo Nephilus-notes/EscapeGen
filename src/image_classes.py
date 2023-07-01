@@ -77,9 +77,10 @@ class Background(DisplayImage):
 
 class Tile(Background):
     """Class for all tiles"""
-    def __init__(self, u, v, bank, x, y, w=16, h=16):
+    def __init__(self, u, v, bank, x, y, column, w=16, h=16):
         self.sight_modifier = .5
         self.name = ''
+        self.column = column
         super().__init__(u, v, bank, x, y, w, h)
 
         if self.u == 0 and self.v == 0:

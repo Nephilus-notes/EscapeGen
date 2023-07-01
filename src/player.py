@@ -15,13 +15,15 @@ class Player(Sprite):
 
         self.fog_layer = fog_layer
 
-    def move(self):
+    def move(self) -> int:
         """Moves the player based on input, needs an additional condition
         to deal with nearing the edge of the screen."""
+        current_x = self.x
         if (px.btn(px.KEY_W) and self.direction != "Up"
         or px.btn(px.KEY_UP) and self.direction != "Up"):
             self.direction = "Up"
             self.u = 0
+        
         elif px.btn(px.KEY_W) or px.btn(px.KEY_UP):
             self.y -= self.adjusted_speed
 
@@ -41,6 +43,7 @@ class Player(Sprite):
         elif px.btn(px.KEY_A) or px.btn(px.KEY_LEFT):
             if self.x <= Layer.back[0].x:
                 pass
+
             elif Layer.back[0].x > 0 and self.x <= WIDTH // 4:
                 for tile in Layer.back:
                     tile.x += self.adjusted_speed
@@ -63,8 +66,12 @@ class Player(Sprite):
                     tile.x -= self.adjusted_speed
             else:
                 self.x += self.adjusted_speed
-
+        
         self.check_sight()
+        if self.x == current_x:
+            return 0
+        else:
+            return 1
 
 
     def check_sight(self,):
