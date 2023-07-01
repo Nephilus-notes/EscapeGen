@@ -255,8 +255,8 @@ class GameScreen(GameState):
     def draw(self):
         self.update_clicking_state()
         self.draw_layers()
-        # self.check_mouse_position()
         self.check_player_location()
+        # self.check_sight()
         px.text(4, 12, f'{px.mouse_x}x/{px.mouse_y}y', 7)
         px.text(200, 16, f'{self.game.size}', 7)
         px.text(200, 24, f'{self.start}', 7)
@@ -267,15 +267,15 @@ class GameScreen(GameState):
         # generate size - 1 number of numbers between 0 and 4.
 
         for i in range(size):
-            for j in range(size):
+            for j in range(10):
                 self.map[i][j] = RI(0, 4)
 
         # insert 5 into the map at a random location
-        self.map[RI(0, size-1)][RI(0, size-1)] = 5
+        self.map[RI(size//2, size-1)][RI(0, 9)] = 5
 
         # for each element of the map create a tile whose u and v values are determined by the number in the map, whose x value starts at self.start and increases by 16 for each element in the row, and whose y values increase by 16 for each element in the column and append the Tile object to Layer.back.
         for i in range(size):
-            for j in range(size):
+            for j in range(10):
                 Layer.back.append(Tile(tile_list_u_v[self.map[i][j]][0], tile_list_u_v[self.map[i][j]][1], 0, start + i*16, j*16))
         
         for tile in Layer.back:
@@ -286,7 +286,7 @@ class GameScreen(GameState):
         self.fog = [[0]* size for i in range(size)]
 
         for i in range(size):
-            for j in range(size):
+            for j in range(40):
                 Layer.fog.append(Tile(fog_u_v[0], fog_u_v[1], 0, start + i*4, j*4, 4, 4))
         # Layer.fore.append(px.text(200, 32, f'{self.fog}', 7))
 
@@ -304,17 +304,35 @@ class GameScreen(GameState):
                     self._next_state = WinScreen(self.game)
                 else:
                     self.game.player.adjusted_speed = self.game.player.speed * tile.intersection()
-                    px.text(200, 32, f'{self.game.player.adjusted_speed}', 7)
-                    px.text(200, 40, f'{tile.name}', 7)
-                    px.text(200, 48, f'intersected', 7)
+                    
 
-        for tile in Interactable.sight:
-             if (tile.x >= self.game.player.x - 12 and 
-                tile.x <= self.game.player.x + 4 and 
-                tile.y <= self.game.player.y + 8 and 
-                tile.y >= self.game.player.y - 8):
-                 
-                 Layer.fog.remove(tile)
+    # def check_sight(self):
+    #     sight_lines = []
+
+    #     for tile in Layer.fog:
+    #         if self.game.player.direction == "Up":
+    #             sight_lines = [[int (self.game.player.x - 2), int(self.game.player.x + 12)], 
+    #                            [int(self.game.player.y - self.game.player.base_sight, int(self.game.player.y + 9))]]
+                
+    #         elif self.game.player.direction == "Down":
+    #             sight_lines = [[int(self.game.player.x -2), int(self.game.player.x + 12)],
+    #                              [int(self.game.player.y - 1), int(self.game.player.y + self.game.player.base_sight + 8)]]
+                
+    #         elif self.game.player.direction == "Left":
+    #             sight_lines = [[int(self.game.player.x - self.game.player.base_sight), int(self.game.player.x + 8)],
+    #                                 [int(self.game.player.y - 2), int(self.game.player.y + 10)]]
+                
+    #         elif self.game.player.direction == "Right":
+    #             sight_lines = [[int(self.game.player.x - 1), int(self.game.player.x + self.game.player.base_sight + 8)],
+    #                                 [int(self.game.player.y - 2), int(self.game.player.y + 10)]]
+
+    #         if tile.sight_intersect(sight_lines):
+    #             self.game.player.sight = self.game.player.base_sight * tile.sight_intersection()
+    #             px.text(200, 32, f'{self.game.player.sight}', 7)
+    #             px.text(200, 40, f'{tile.name}', 7)
+    #             px.text(200, 48, f'intersected', 7)
+
+    #     px.text(200, 56, f'{sight_lines}', 7)
 
     def update(self):
         self.game.player.move()

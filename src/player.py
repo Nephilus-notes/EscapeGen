@@ -1,5 +1,7 @@
 from src.image_classes import Sprite 
 import pyxel as px
+from src.utils import Interactable, Layer, Updatable
+from src.constants import WIDTH, HEIGHT
 
 class Player(Sprite):
 
@@ -27,6 +29,7 @@ class Player(Sprite):
         or px.btn(px.KEY_DOWN) and self.direction != "Down"):
             self.direction = "Down"
             self.u = 8
+
         elif px.btn(px.KEY_S) or px.btn(px.KEY_DOWN):
             self.y += self.adjusted_speed
 
@@ -34,15 +37,32 @@ class Player(Sprite):
         or px.btn(px.KEY_LEFT) and self.direction != "Left"):
             self.direction = "Left"
             self.u = 24
+
         elif px.btn(px.KEY_A) or px.btn(px.KEY_LEFT):
-            self.x -= self.adjusted_speed
+            if self.x <= Layer.back[0].x:
+                pass
+            elif Layer.back[0].x > 0 and self.x <= WIDTH // 4:
+                for tile in Layer.back:
+                    tile.x += self.adjusted_speed
+                for tile in Layer.fog:
+                    tile.x += self.adjusted_speed
+            else:
+                self.x -= self.adjusted_speed
 
         if (px.btn(px.KEY_D) and self.direction != "Right"
         or px.btn(px.KEY_RIGHT) and self.direction != "Right"):
             self.direction = "Right"
             self.u = 16
         elif px.btn(px.KEY_D) or px.btn(px.KEY_RIGHT):
-            self.x += self.adjusted_speed
+            if self.x >= Layer.back[-1].x + 8:
+                pass
+            elif self.x >= WIDTH // 2 + WIDTH // 4:
+                for tile in Layer.back:
+                    tile.x -= self.adjusted_speed
+                for tile in Layer.fog:
+                    tile.x -= self.adjusted_speed
+            else:
+                self.x += self.adjusted_speed
 
         self.check_sight()
 
@@ -60,7 +80,7 @@ class Player(Sprite):
 
         elif self.direction == "Down":
             for tile in self.fog_layer:
-                if tile.y <= self.y + self.sight and tile.y >= self.y and tile.x >= self.x - 3 and tile.x <= self.x  + 11:
+                if tile.y <= self.y + self.sight + 8 and tile.y >= self.y and tile.x >= self.x - 3 and tile.x <= self.x  + 11:
                     self.fog_layer.remove(tile)
 
 
@@ -71,5 +91,5 @@ class Player(Sprite):
 
         elif self.direction == "Right":
             for tile in self.fog_layer:
-                if tile.x <= self.x + self.sight and tile.x >= self.x and tile.y >= self.y - 3 and tile.y <= self.y + 11:
+                if tile.x <= self.x + self.sight + 8 and tile.x >= self.x and tile.y >= self.y - 3 and tile.y <= self.y + 11:
                     self.fog_layer.remove(tile)

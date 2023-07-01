@@ -78,41 +78,73 @@ class Background(DisplayImage):
 class Tile(Background):
     """Class for all tiles"""
     def __init__(self, u, v, bank, x, y, w=16, h=16):
+        self.sight_modifier = .5
+        self.name = ''
         super().__init__(u, v, bank, x, y, w, h)
 
         if self.u == 0 and self.v == 0:
             self.colkey = 0
             self.name = "Forest"
             self.speed_modifier = .8
+            self.sight_modifier = .8
 
         if self.u == 16 and self.v == 0:
             self.colkey = 1
             self.name = "Mountain"
             self.speed_modifier = .2
+            self.sight_modifier = .2
 
         if self.u == 32 and self.v == 0:
             self.colkey = 0
             self.name = "Grassland"
             self.speed_modifier = 1
+            self.sight_modifier = 1
 
         if self.u == 48 and self.v == 0:
             self.colkey = 0
             self.name = "Desert"
             self.speed_modifier = 1.1
+            self.sight_modifier = 1.1
 
         if self.u == 16 and self.v == 16:
             self.colkey = 0
             self.name = "Water"
             self.speed_modifier = .5
+            self.sight_modifier = 1.4
 
         if self.u == 0 and self.v == 16:
             self.colkey = 7
             self.name = "Cave"
+            self.speed_modifier = 1
+            self.sight_modifier = 1
 
-        if self.u == 0 and self.v == 64:
-            self.colkey = 0
-            self.name = "Fog"
-            self.speed_modifier = 0
+    def draw(self):
+        px.blt(self.x, self.y, self.bank, self.u, self.v, self.w, self.h, colkey=7)
+
+    def intersects(self, character_location:tuple):
+        is_intersected = False
+        if (
+            character_location[0] > self.x and character_location[1] < self.x + self.w
+            and character_location[1] > self.y and character_location[1] < self.y + self.h + 2
+        ):
+            is_intersected = True
+            return is_intersected
+        
+    def sight_intersect(self, sight_lines:list):
+        is_intersected = False
+        if (self.x in range(sight_lines[0][0], sight_lines[0][1]) and self.y in range(sight_lines[1][0], sight_lines[1][1])
+            or self.x + self.w in range(sight_lines[0][0], sight_lines[0][1]) and self.y in range(sight_lines[1][0], sight_lines[1][1])
+            or self.x in range(sight_lines[0][0], sight_lines[0][1]) and self.y + self.h in range(sight_lines[1][0], sight_lines[1][1])
+            or self.x + self.w in range(sight_lines[0][0], sight_lines[0][1]) and self.y + self.h in range(sight_lines[1][0], sight_lines[1][1])):
+                is_intersected = True
+                return is_intersected
+    
+    def sight_intersection(self):
+        return self.sight_modifier
+
+    def intersection(self) -> float:
+        return self.speed_modifier
+        
 
     def draw(self):
         px.blt(self.x, self.y, self.bank, self.u, self.v, self.w, self.h, colkey=7)
@@ -128,8 +160,8 @@ class Tile(Background):
 
     def intersection(self) -> float:
         return self.speed_modifier
-        
-    
+
+
 class Clickable:
     """"parent class for all objects that use hover or on click effects"""
     def intersects(self, mouse_location:tuple):
