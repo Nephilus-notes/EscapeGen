@@ -13,8 +13,6 @@ class DisplayText:
         px.text(self.x, self.y, f'{self.stat_name}:{self.owner} ', self.col)
 
 
-
-
 class DisplayImage:
     """Parent class for all displayed objects"""
     def __init__(self, x, y, bank, u, v, w, h, colkey=7) -> None:
